@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import com.ctre.phoenix.motion.*;
 import com.ctre.phoenix.motion.TrajectoryPoint.TrajectoryDuration;
 
+
 public class MotionProfileExample {
 
 	/**

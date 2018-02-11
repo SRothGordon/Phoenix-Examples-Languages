@@ -37,10 +37,14 @@ public class Robot extends IterativeRobot {
 
 	/** The Talon we want to motion profile. */
 	TalonSRX _talon = new TalonSRX(Constants.kTalonID);
-
+	TalonSRX _talon2 = new TalonSRX(Constants.kTalonID2);
+	
+	TalonSRX _talon3 = new TalonSRX(Constants.kTalonID3);
+	TalonSRX _talon4 = new TalonSRX(Constants.kTalonID4);
 	/** some example logic on how one can manage an MP */
 	MotionProfileExample _example = new MotionProfileExample(_talon);
-
+	MotionProfileExample _example2 = new MotionProfileExample(_talon2);
+	
 	/** joystick for testing */
 	Joystick _joy = new Joystick(0);
 
@@ -54,14 +58,14 @@ public class Robot extends IterativeRobot {
 	/** run once after booting/enter-disable */
 	public void disabledInit() {
 
-		_talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+		_talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
 		_talon.setSensorPhase(true); /* keep sensor and motor in phase */
 		_talon.configNeutralDeadband(Constants.kNeutralDeadband, Constants.kTimeoutMs);
 
-		_talon.config_kF(0, 0.076, Constants.kTimeoutMs);
-		_talon.config_kP(0, 2.000, Constants.kTimeoutMs);
+		_talon.config_kF(0, 1.0, Constants.kTimeoutMs); //left is 2.3335//right is 2.0019
+		_talon.config_kP(0, 0.0, Constants.kTimeoutMs);
 		_talon.config_kI(0, 0.0, Constants.kTimeoutMs);
-		_talon.config_kD(0, 20.0, Constants.kTimeoutMs);
+		_talon.config_kD(0, 0.0, Constants.kTimeoutMs);
 
 		/* Our profile uses 10ms timing */
 		_talon.configMotionProfileTrajectoryPeriod(10, Constants.kTimeoutMs); 
@@ -70,11 +74,31 @@ public class Robot extends IterativeRobot {
 		 * motion magic
 		 */
 		_talon.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+		
+		_talon2.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+		_talon2.setSensorPhase(true); /* keep sensor and motor in phase */
+		_talon2.configNeutralDeadband(Constants.kNeutralDeadband, Constants.kTimeoutMs);
+
+		_talon2.config_kF(0, 2.0019, Constants.kTimeoutMs); //left is 2.3335//right is 2.0019
+		_talon2.config_kP(0, 0.0, Constants.kTimeoutMs);
+		_talon2.config_kI(0, 0.0, Constants.kTimeoutMs);
+		_talon2.config_kD(0, 0.0, Constants.kTimeoutMs);
+
+		/* Our profile uses 10ms timing */
+		_talon2.configMotionProfileTrajectoryPeriod(10, Constants.kTimeoutMs); 
+		/*
+		 * status 10 provides the trajectory target for motion profile AND
+		 * motion magic
+		 */
+		_talon2.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+		
+		
 	}
 
 	/** function is called periodically during operator control */
 	public void teleopPeriodic() {
 		/* get buttons */
+		
 		boolean[] btns = new boolean[_btnsLast.length];
 		for (int i = 1; i < _btnsLast.length; ++i)
 			btns[i] = _joy.getRawButton(i);
@@ -87,7 +111,10 @@ public class Robot extends IterativeRobot {
 		 * wants to run MP.
 		 */
 		_example.control();
+		_example2.control();
 
+		_talon3.set(ControlMode.Follower, Constants.kTalonID);
+		_talon4.set(ControlMode.Follower, Constants.kTalonID2);
 		/* Check button 5 (top left shoulder on the logitech gamead). */
 		if (btns[5] == false) {
 			/*
@@ -97,9 +124,12 @@ public class Robot extends IterativeRobot {
 			 */
 
 			/* button5 is off so straight drive */
-			_talon.set(ControlMode.PercentOutput, leftYjoystick);
-
+			_talon.set(ControlMode.PercentOutput, leftYjoystick*leftYjoystick);
+			_talon2.set(ControlMode.PercentOutput, leftYjoystick*leftYjoystick);
+			
 			_example.reset();
+			_example2.reset();
+			
 		} else {
 			/*
 			 * Button5 is held down so switch to motion profile control mode =>
@@ -108,8 +138,10 @@ public class Robot extends IterativeRobot {
 			 */
 
 			SetValueMotionProfile setOutput = _example.getSetValue();
+			SetValueMotionProfile setOutput2 = _example2.getSetValue();
 
 			_talon.set(ControlMode.MotionProfile, setOutput.value);
+			_talon2.set(ControlMode.MotionProfile, setOutput2.value);
 
 			/*
 			 * if btn is pressed and was not pressed last time, In other words
@@ -121,6 +153,7 @@ public class Robot extends IterativeRobot {
 
 				// --- We could start an MP if MP isn't already running ----//
 				_example.startMotionProfile();
+				_example2.startMotionProfile();
 			}
 		}
 
@@ -139,7 +172,9 @@ public class Robot extends IterativeRobot {
 		 * what the application/testing requires than modify this accordingly
 		 */
 		_talon.set(ControlMode.PercentOutput, 0);
+		_talon2.set(ControlMode.PercentOutput, 0);
 		/* clear our buffer and put everything into a known state */
 		_example.reset();
+		_example2.reset();
 	}
 }
