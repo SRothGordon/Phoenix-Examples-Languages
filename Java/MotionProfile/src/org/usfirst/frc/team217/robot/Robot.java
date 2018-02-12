@@ -36,14 +36,13 @@ import edu.wpi.first.wpilibj.Joystick;
 public class Robot extends IterativeRobot {
 
 	/** The Talon we want to motion profile. */
-	TalonSRX _talon = new TalonSRX(Constants.kTalonID);
-	TalonSRX _talon2 = new TalonSRX(Constants.kTalonID2);
+	TalonSRX _talon = new TalonSRX(1); //right
+	TalonSRX _talon2 = new TalonSRX(2);
 	
-	TalonSRX _talon3 = new TalonSRX(Constants.kTalonID3);
-	TalonSRX _talon4 = new TalonSRX(Constants.kTalonID4);
+	TalonSRX _talon3 = new TalonSRX(3);//left
+	TalonSRX _talon4 = new TalonSRX(4);
 	/** some example logic on how one can manage an MP */
-	MotionProfileExample _example = new MotionProfileExample(_talon);
-	MotionProfileExample _example2 = new MotionProfileExample(_talon2);
+	MotionProfileExample _example = new MotionProfileExample(_talon3, _talon);
 	
 	/** joystick for testing */
 	Joystick _joy = new Joystick(0);
@@ -58,39 +57,76 @@ public class Robot extends IterativeRobot {
 	/** run once after booting/enter-disable */
 	public void disabledInit() {
 
-		_talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-		_talon.setSensorPhase(true); /* keep sensor and motor in phase */
-		_talon.configNeutralDeadband(Constants.kNeutralDeadband, Constants.kTimeoutMs);
-
-		_talon.config_kF(0, 1.0, Constants.kTimeoutMs); //left is 2.3335//right is 2.0019
-		_talon.config_kP(0, 0.0, Constants.kTimeoutMs);
-		_talon.config_kI(0, 0.0, Constants.kTimeoutMs);
-		_talon.config_kD(0, 0.0, Constants.kTimeoutMs);
-
-		/* Our profile uses 10ms timing */
-		_talon.configMotionProfileTrajectoryPeriod(10, Constants.kTimeoutMs); 
-		/*
-		 * status 10 provides the trajectory target for motion profile AND
-		 * motion magic
-		 */
-		_talon.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+		_talon3.setNeutralMode(NeutralMode.Brake);
+		_talon4.setNeutralMode(NeutralMode.Brake);
 		
-		_talon2.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-		_talon2.setSensorPhase(true); /* keep sensor and motor in phase */
-		_talon2.configNeutralDeadband(Constants.kNeutralDeadband, Constants.kTimeoutMs);
+		_talon.setNeutralMode(NeutralMode.Brake);
+		_talon2.setNeutralMode(NeutralMode.Brake);
+		
+		_talon3.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		_talon3.setSensorPhase(false);
+		_talon3.setInverted(false);
+		_talon4.setInverted(false);
+		
+		_talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		_talon.setSensorPhase(false);
+		_talon.setInverted(true);
+		_talon2.setInverted(true);
 
-		_talon2.config_kF(0, 2.0019, Constants.kTimeoutMs); //left is 2.3335//right is 2.0019
-		_talon2.config_kP(0, 0.0, Constants.kTimeoutMs);
-		_talon2.config_kI(0, 0.0, Constants.kTimeoutMs);
-		_talon2.config_kD(0, 0.0, Constants.kTimeoutMs);
+		/* Set relevant frame periods to be at least as fast as periodic rate */
+		_talon3.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
+		_talon3.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
 
-		/* Our profile uses 10ms timing */
-		_talon2.configMotionProfileTrajectoryPeriod(10, Constants.kTimeoutMs); 
-		/*
-		 * status 10 provides the trajectory target for motion profile AND
-		 * motion magic
-		 */
+		_talon.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
 		_talon2.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+		
+		/* set the peak and nominal outputs */
+		_talon3.configNeutralDeadband(0.001, Constants.kTimeoutMs);
+		_talon3.configNominalOutputForward(0, Constants.kTimeoutMs);
+		_talon3.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		_talon3.configPeakOutputForward(1, Constants.kTimeoutMs);
+		_talon3.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+		
+		_talon.configNeutralDeadband(0.001, Constants.kTimeoutMs);
+		_talon.configNominalOutputForward(0, Constants.kTimeoutMs);
+		_talon.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		_talon.configPeakOutputForward(1, Constants.kTimeoutMs);
+		_talon.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+
+		_talon4.configNeutralDeadband(0.001, Constants.kTimeoutMs);
+		_talon4.configNominalOutputForward(0, Constants.kTimeoutMs);
+		_talon4.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		_talon4.configPeakOutputForward(1, Constants.kTimeoutMs);
+		_talon4.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+		
+		_talon2.configNeutralDeadband(0.001, Constants.kTimeoutMs);
+		_talon2.configNominalOutputForward(0, Constants.kTimeoutMs);
+		_talon2.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		_talon2.configPeakOutputForward(1, Constants.kTimeoutMs);
+		_talon2.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+		
+		/* set closed loop gains in slot0 - see documentation */
+		_talon3.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
+		_talon3.config_kF(0, 0.9728, Constants.kTimeoutMs);//0.9728 left side
+		_talon3.config_kP(0, 2.472, Constants.kTimeoutMs);//2.472 left side 
+		_talon3.config_kI(0, 0, Constants.kTimeoutMs);
+		_talon3.config_kD(0, 24.72, Constants.kTimeoutMs);
+		/* set acceleration and vcruise velocity - see documentation */
+		_talon3.configMotionCruiseVelocity(788, Constants.kTimeoutMs);
+		_talon3.configMotionAcceleration(788, Constants.kTimeoutMs);
+		/* zero the sensor */
+		_talon3.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		
+		_talon.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
+		_talon.config_kF(0, 0.9728, Constants.kTimeoutMs);//0.9728 left side
+		_talon.config_kP(0, 2.472, Constants.kTimeoutMs);//2.472 left side 
+		_talon.config_kI(0, 0, Constants.kTimeoutMs);
+		_talon.config_kD(0, 24.72, Constants.kTimeoutMs);
+		/* set acceleration and vcruise velocity - see documentation */
+		_talon.configMotionCruiseVelocity(788, Constants.kTimeoutMs);
+		_talon.configMotionAcceleration(788, Constants.kTimeoutMs);
+		/* zero the sensor */
+		_talon.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 		
 		
 	}
@@ -111,10 +147,9 @@ public class Robot extends IterativeRobot {
 		 * wants to run MP.
 		 */
 		_example.control();
-		_example2.control();
 
-		_talon3.set(ControlMode.Follower, Constants.kTalonID);
-		_talon4.set(ControlMode.Follower, Constants.kTalonID2);
+		_talon2.set(ControlMode.Follower, _talon.getDeviceID());
+		_talon4.set(ControlMode.Follower, _talon3.getDeviceID());
 		/* Check button 5 (top left shoulder on the logitech gamead). */
 		if (btns[5] == false) {
 			/*
@@ -125,10 +160,9 @@ public class Robot extends IterativeRobot {
 
 			/* button5 is off so straight drive */
 			_talon.set(ControlMode.PercentOutput, leftYjoystick*leftYjoystick);
-			_talon2.set(ControlMode.PercentOutput, leftYjoystick*leftYjoystick);
+			_talon3.set(ControlMode.PercentOutput, leftYjoystick*leftYjoystick);
 			
 			_example.reset();
-			_example2.reset();
 			
 		} else {
 			/*
@@ -138,10 +172,9 @@ public class Robot extends IterativeRobot {
 			 */
 
 			SetValueMotionProfile setOutput = _example.getSetValue();
-			SetValueMotionProfile setOutput2 = _example2.getSetValue();
 
 			_talon.set(ControlMode.MotionProfile, setOutput.value);
-			_talon2.set(ControlMode.MotionProfile, setOutput2.value);
+			_talon3.set(ControlMode.MotionProfile, setOutput.value);
 
 			/*
 			 * if btn is pressed and was not pressed last time, In other words
@@ -153,7 +186,6 @@ public class Robot extends IterativeRobot {
 
 				// --- We could start an MP if MP isn't already running ----//
 				_example.startMotionProfile();
-				_example2.startMotionProfile();
 			}
 		}
 
@@ -175,6 +207,5 @@ public class Robot extends IterativeRobot {
 		_talon2.set(ControlMode.PercentOutput, 0);
 		/* clear our buffer and put everything into a known state */
 		_example.reset();
-		_example2.reset();
 	}
 }

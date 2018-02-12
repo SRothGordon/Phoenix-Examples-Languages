@@ -4,7 +4,7 @@ public class Constants {
 
 	/** which Talon on CANBus */
 	public static final int kTalonID = 1; //was 0
-	public static final int kTalonID2 = 3; //was 0
+	public static final int kTalonID2 = 3; 
 	
 	public static final int kTalonID3=2;
 	public static final int kTalonID4=4;
