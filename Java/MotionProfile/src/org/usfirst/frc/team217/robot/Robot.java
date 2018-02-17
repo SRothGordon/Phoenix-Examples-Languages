@@ -150,7 +150,7 @@ public class Robot extends IterativeRobot {
 
 		_talon2.set(ControlMode.Follower, _talon.getDeviceID());
 		_talon4.set(ControlMode.Follower, _talon3.getDeviceID());
-		/* Check button 5 (top left shoulder on the logitech gamead). */
+		// Check button 5 (top left shoulder on the logitech gamead). 
 		if (btns[5] == false) {
 			/*
 			 * If it's not being pressed, just do a simple drive. This could be
