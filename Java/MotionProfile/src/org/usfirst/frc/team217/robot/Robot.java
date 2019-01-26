@@ -36,13 +36,13 @@ import edu.wpi.first.wpilibj.Joystick;
 public class Robot extends IterativeRobot {
 
 	/** The Talon we want to motion profile. */
-	TalonSRX _talon = new TalonSRX(1); //right
-	TalonSRX _talon2 = new TalonSRX(2);
+	TalonSRX rightFrontMotor= new TalonSRX(13); //right
+	TalonSRX rightRearMotor = new TalonSRX(14);
 	
-	TalonSRX _talon3 = new TalonSRX(3);//left
-	TalonSRX _talon4 = new TalonSRX(4);
+	TalonSRX leftFrontMotor = new TalonSRX(11);//left
+	TalonSRX leftRearMotor = new TalonSRX(12);
 	/** some example logic on how one can manage an MP */
-	MotionProfileExample _example = new MotionProfileExample(_talon3, _talon);
+	MotionProfileExample _example = new MotionProfileExample(leftFrontMotor, rightFrontMotor);
 	
 	/** joystick for testing */
 	Joystick _joy = new Joystick(0);
@@ -57,76 +57,76 @@ public class Robot extends IterativeRobot {
 	/** run once after booting/enter-disable */
 	public void disabledInit() {
 
-		_talon3.setNeutralMode(NeutralMode.Brake);
-		_talon4.setNeutralMode(NeutralMode.Brake);
+		leftFrontMotor.setNeutralMode(NeutralMode.Brake);
+		leftRearMotor.setNeutralMode(NeutralMode.Brake);
 		
-		_talon.setNeutralMode(NeutralMode.Brake);
-		_talon2.setNeutralMode(NeutralMode.Brake);
+		rightFrontMotor.setNeutralMode(NeutralMode.Brake);
+		rightRearMotor.setNeutralMode(NeutralMode.Brake);
 		
-		_talon3.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
-		_talon3.setSensorPhase(false);
-		_talon3.setInverted(false);
-		_talon4.setInverted(false);
+		leftFrontMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		leftFrontMotor.setSensorPhase(false);
+		leftFrontMotor.setInverted(true);
+		leftRearMotor.setInverted(true);
 		
-		_talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
-		_talon.setSensorPhase(false);
-		_talon.setInverted(true);
-		_talon2.setInverted(true);
+		rightFrontMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		rightFrontMotor.setSensorPhase(false);
+		rightFrontMotor.setInverted(false);
+		rightRearMotor.setInverted(false);
 
 		/* Set relevant frame periods to be at least as fast as periodic rate */
-		_talon3.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
-		_talon3.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+		leftFrontMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
+		leftFrontMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
 
-		_talon.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
-		_talon2.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+		rightFrontMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
+		rightRearMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
 		
 		/* set the peak and nominal outputs */
-		_talon3.configNeutralDeadband(0.001, Constants.kTimeoutMs);
-		_talon3.configNominalOutputForward(0, Constants.kTimeoutMs);
-		_talon3.configNominalOutputReverse(0, Constants.kTimeoutMs);
-		_talon3.configPeakOutputForward(1, Constants.kTimeoutMs);
-		_talon3.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+		leftFrontMotor.configNeutralDeadband(0.001, Constants.kTimeoutMs);
+		leftFrontMotor.configNominalOutputForward(0, Constants.kTimeoutMs);
+		leftFrontMotor.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		leftFrontMotor.configPeakOutputForward(1, Constants.kTimeoutMs);
+		leftFrontMotor.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 		
-		_talon.configNeutralDeadband(0.001, Constants.kTimeoutMs);
-		_talon.configNominalOutputForward(0, Constants.kTimeoutMs);
-		_talon.configNominalOutputReverse(0, Constants.kTimeoutMs);
-		_talon.configPeakOutputForward(1, Constants.kTimeoutMs);
-		_talon.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+		rightFrontMotor.configNeutralDeadband(0.001, Constants.kTimeoutMs);
+		rightFrontMotor.configNominalOutputForward(0, Constants.kTimeoutMs);
+		rightFrontMotor.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		rightFrontMotor.configPeakOutputForward(1, Constants.kTimeoutMs);
+		rightFrontMotor.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
-		_talon4.configNeutralDeadband(0.001, Constants.kTimeoutMs);
-		_talon4.configNominalOutputForward(0, Constants.kTimeoutMs);
-		_talon4.configNominalOutputReverse(0, Constants.kTimeoutMs);
-		_talon4.configPeakOutputForward(1, Constants.kTimeoutMs);
-		_talon4.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+		leftRearMotor.configNeutralDeadband(0.001, Constants.kTimeoutMs);
+		leftRearMotor.configNominalOutputForward(0, Constants.kTimeoutMs);
+		leftRearMotor.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		leftRearMotor.configPeakOutputForward(1, Constants.kTimeoutMs);
+		leftRearMotor.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 		
-		_talon2.configNeutralDeadband(0.001, Constants.kTimeoutMs);
-		_talon2.configNominalOutputForward(0, Constants.kTimeoutMs);
-		_talon2.configNominalOutputReverse(0, Constants.kTimeoutMs);
-		_talon2.configPeakOutputForward(1, Constants.kTimeoutMs);
-		_talon2.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+		rightRearMotor.configNeutralDeadband(0.001, Constants.kTimeoutMs);
+		rightRearMotor.configNominalOutputForward(0, Constants.kTimeoutMs);
+		rightRearMotor.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		rightRearMotor.configPeakOutputForward(1, Constants.kTimeoutMs);
+		rightRearMotor.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 		
 		/* set closed loop gains in slot0 - see documentation */
-		_talon3.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
-		_talon3.config_kF(0, 0.9728, Constants.kTimeoutMs);//0.9728 left side
-		_talon3.config_kP(0, 2.472, Constants.kTimeoutMs);//2.472 left side 
-		_talon3.config_kI(0, 0, Constants.kTimeoutMs);
-		_talon3.config_kD(0, 24.72, Constants.kTimeoutMs);
+		leftFrontMotor.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
+		leftFrontMotor.config_kF(0, 1023/9926.8, Constants.kTimeoutMs);//0.9728 left side
+		leftFrontMotor.config_kP(0, 0.6704, Constants.kTimeoutMs);//2.472 left side 
+		leftFrontMotor.config_kI(0, 0, Constants.kTimeoutMs);
+		leftFrontMotor.config_kD(0, 10230/9926.8, Constants.kTimeoutMs);
 		/* set acceleration and vcruise velocity - see documentation */
-		_talon3.configMotionCruiseVelocity(788, Constants.kTimeoutMs);
-		_talon3.configMotionAcceleration(788, Constants.kTimeoutMs);
+		leftFrontMotor.configMotionCruiseVelocity((int) (.8*9926.8), Constants.kTimeoutMs);
+		leftFrontMotor.configMotionAcceleration((int) (4346/1.5), Constants.kTimeoutMs);
 		/* zero the sensor */
-		_talon3.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		leftFrontMotor.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 		
-		_talon.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
-		_talon.config_kF(0, 0.9728, Constants.kTimeoutMs);//0.9728 left side
-		_talon.config_kP(0, 2.472, Constants.kTimeoutMs);//2.472 left side 
-		_talon.config_kI(0, 0, Constants.kTimeoutMs);
-		_talon.config_kD(0, 24.72, Constants.kTimeoutMs);
+		rightFrontMotor.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
+		rightFrontMotor.config_kF(0, 1023/9926.8, Constants.kTimeoutMs);//0.9728 left side
+		rightFrontMotor.config_kP(0, 0.6704, Constants.kTimeoutMs);//2.472 left side 
+		rightFrontMotor.config_kI(0, 0, Constants.kTimeoutMs);
+		rightFrontMotor.config_kD(0, 10230/9926.8, Constants.kTimeoutMs);
 		/* set acceleration and vcruise velocity - see documentation */
-		_talon.configMotionCruiseVelocity(788, Constants.kTimeoutMs);
-		_talon.configMotionAcceleration(788, Constants.kTimeoutMs);
+		rightFrontMotor.configMotionCruiseVelocity((int) (0.8*9926.8), Constants.kTimeoutMs);
+		rightFrontMotor.configMotionAcceleration((int) (4346/1.5), Constants.kTimeoutMs);
 		/* zero the sensor */
-		_talon.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		rightFrontMotor.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 		
 		
 	}
@@ -148,8 +148,8 @@ public class Robot extends IterativeRobot {
 		 */
 		_example.control();
 
-		_talon2.set(ControlMode.Follower, _talon.getDeviceID());
-		_talon4.set(ControlMode.Follower, _talon3.getDeviceID());
+		rightRearMotor.set(ControlMode.Follower, rightFrontMotor.getDeviceID());
+		leftRearMotor.set(ControlMode.Follower, leftFrontMotor.getDeviceID());
 		// Check button 5 (top left shoulder on the logitech gamead). 
 		if (btns[5] == false) {
 			/*
@@ -159,8 +159,8 @@ public class Robot extends IterativeRobot {
 			 */
 
 			/* button5 is off so straight drive */
-			_talon.set(ControlMode.PercentOutput, leftYjoystick*leftYjoystick);
-			_talon3.set(ControlMode.PercentOutput, leftYjoystick*leftYjoystick);
+			rightFrontMotor.set(ControlMode.PercentOutput, leftYjoystick*leftYjoystick);
+			leftFrontMotor.set(ControlMode.PercentOutput, leftYjoystick*leftYjoystick);
 			
 			_example.reset();
 			
@@ -173,8 +173,8 @@ public class Robot extends IterativeRobot {
 
 			SetValueMotionProfile setOutput = _example.getSetValue();
 
-			_talon.set(ControlMode.MotionProfile, setOutput.value);
-			_talon3.set(ControlMode.MotionProfile, setOutput.value);
+			rightFrontMotor.set(ControlMode.MotionProfile, setOutput.value);
+			leftFrontMotor.set(ControlMode.MotionProfile, setOutput.value);
 
 			/*
 			 * if btn is pressed and was not pressed last time, In other words
@@ -203,8 +203,8 @@ public class Robot extends IterativeRobot {
 		 * doesn't just continue doing what it was doing before. BUT if that's
 		 * what the application/testing requires than modify this accordingly
 		 */
-		_talon.set(ControlMode.PercentOutput, 0);
-		_talon2.set(ControlMode.PercentOutput, 0);
+		rightFrontMotor.set(ControlMode.PercentOutput, 0);
+		rightRearMotor.set(ControlMode.PercentOutput, 0);
 		/* clear our buffer and put everything into a known state */
 		_example.reset();
 	}

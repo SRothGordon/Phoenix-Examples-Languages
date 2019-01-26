@@ -107,7 +107,9 @@ public class MotionProfileExample {
 	 * every 10ms.
 	 */
 	class PeriodicRunnable implements java.lang.Runnable {
-	    public void run() {  _talonL.processMotionProfileBuffer();  _talonR.processMotionProfileBuffer();  }
+	    public void run() {  
+	    	_talonL.processMotionProfileBuffer();  
+	    	_talonR.processMotionProfileBuffer();  }
 	}
 	Notifier _notifer = new Notifier(new PeriodicRunnable());
 	
@@ -289,10 +291,10 @@ public class MotionProfileExample {
 	private void startFilling() {
 		
 		// TODO: Experiment with Jaci's pathfinder code
-				Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, // Type of curve to fit
+				Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC, // Type of curve to fit
 																 Trajectory.Config.SAMPLES_LOW,     // Smooth fit (high) or fast fit (low)
 																 0.05, 			// Time between segments
-																 0.3048*3, 	    // Max speed m/s
+																 0.3048*6, 	    // Max speed m/s
 																 2.0, 			// Max acceleration m/s^2
 																 60.0);			// Max jerk m/s^3
 				
@@ -300,8 +302,10 @@ public class MotionProfileExample {
 				// (meter, meter, radian)
 				//
 				// For simplicity lets assume that we start 0,0,0
-			    Waypoint[] points = new Waypoint[] 
-			    {
+				
+				double R_m=1.0;
+			    Waypoint[] points = new Waypoint[]  
+			    {                             
 			    		/*  x (m)   y (m)   deg
 			    		 * 	0	    0	    0
 							1.524	0	    35
@@ -310,12 +314,46 @@ public class MotionProfileExample {
 							2.1082	5.1054	115
 							2.7686	6.5024	0
 			    		 */
-			            new Waypoint(0,      0,      Pathfinder.d2r(0)),
-			            new Waypoint(1.5240, 0,      Pathfinder.d2r(35)),
-			            new Waypoint(2.1082, 0.5080, Pathfinder.d2r(70)),
-			            new Waypoint(2.6924, 2.2098, Pathfinder.d2r(90)),
-			            new Waypoint(2.1082, 5.1054, Pathfinder.d2r(115)),
-			            new Waypoint(2.7686, 6.5024, Pathfinder.d2r(0))
+			    		
+			    		
+//		            new Waypoint(0,      0,      Pathfinder.d2r(0)),
+//		            new Waypoint(1.5240, 0,      Pathfinder.d2r(35)),
+//		            new Waypoint(2.1082, 0.5080, Pathfinder.d2r(70)),
+//		            new Waypoint(2.6924, 2.2098, Pathfinder.d2r(90)),
+//		            new Waypoint(2.1082, 5.1054, Pathfinder.d2r(115)),
+//		            new Waypoint(2.7686, 6.5024, Pathfinder.d2r(0))			    		
+			    		
+			    	//new Waypoint(0,     0,     Pathfinder.d2r(0)),
+		    		//new Waypoint(0.699, 0.864, Pathfinder.d2r(-45)),
+		    		//new Waypoint(1.245, 1.817, Pathfinder.d2r(0)),
+//		    		new Waypoint(1.245, 6.008, 0),
+//		    		new Waypoint(0.689, 6.884, -0.785),
+//		    		new Waypoint(-0.124, 7.367, 1.570)
+			    		
+		    		//new Waypoint(0.813, 2.922, Pathfinder.d2r(45)),
+		    		//new Waypoint(0, 3.405, Pathfinder.d2r(90))
+		    		
+		    		new Waypoint(0, 0, Pathfinder.d2r(0)),
+		    		new Waypoint(0.864, -0.699, Pathfinder.d2r(-45)),
+		    		new Waypoint(1.817+0.5, -1.245, Pathfinder.d2r(0)),
+		    		//ALT1:
+		    		//new Waypoint(6.008, 1.245, Pathfinder.d2r(0)),
+		    		//new Waypoint(6.884, 0.689, Pathfinder.d2r(-45)),
+		    		//new Waypoint(7.367, -0.124, Pathfinder.d2r(-90))
+		    		//ALT 2:
+		    		new Waypoint(2.922+0.3, -1.245+0.3, Pathfinder.d2r(45)),
+		    		new Waypoint(3.405, 0, Pathfinder.d2r(90))
+			    		
+//			    		
+//			    	new Waypoint(0, 		0,      Pathfinder.d2r(0)),
+//			        new Waypoint(R_m, 		0,      Pathfinder.d2r(0)),
+//			     //   new Waypoint(1.5*R_m,   0.5*R_m, Pathfinder.d2r(45)),
+//			        new Waypoint(2*R_m, 	R_m, 	Pathfinder.d2r(90)),
+//			        new Waypoint(2*R_m,     2*R_m,  Pathfinder.d2r(90)),
+//			        new Waypoint(2*R_m, 	3*R_m, 	Pathfinder.d2r(90)),
+//			        new Waypoint(2.5*R_m,   3.5*R_m, Pathfinder.d2r(45)),
+//			        new Waypoint(3*R_m, 	4*R_m, 	Pathfinder.d2r(0)),
+//			        new Waypoint(4*R_m, 	4*R_m, 	Pathfinder.d2r(0))	
 			    };
 
 			    Trajectory trajectory = Pathfinder.generate(points, config);
@@ -365,8 +403,8 @@ public class MotionProfileExample {
 			Trajectory.Segment seg = profileL.get(i);
 
 			/* for each point, fill our structure and pass it to API */
-			pointL.position = seg.position*2.916; 		// MAGIC conversion from m to rotations
-       	 	pointL.velocity = seg.velocity*174.97;		// MAGIC conversion from m/s to RPM
+			pointL.position = seg.position*2.006; 		// MAGIC conversion from m to rotations
+       	 	pointL.velocity = seg.velocity*120.482;		// MAGIC conversion from m/s to RPM
 			pointL.position = pointL.position * Constants.kSensorUnitsPerRotation; //Convert Revolutions to Units
 			pointL.velocity = pointL.velocity * Constants.kSensorUnitsPerRotation / 600.0; //Convert RPM to Units/100ms
 
@@ -386,8 +424,8 @@ public class MotionProfileExample {
 			seg = profileR.get(i);
 
 			/* for each point, fill our structure and pass it to API */
-			pointR.position = seg.position*2.916; 		// MAGIC conversion from m to rotations
-			pointR.velocity = seg.velocity*174.97;		// MAGIC conversion from m/s to RPM
+			pointR.position = seg.position*2.006; 		// MAGIC conversion from m to rotations
+			pointR.velocity = seg.velocity*120.482;		// MAGIC conversion from m/s to RPM
 			pointR.position = pointR.position * Constants.kSensorUnitsPerRotation; //Convert Revolutions to Units
 			pointR.velocity = pointR.velocity * Constants.kSensorUnitsPerRotation / 600.0; //Convert RPM to Units/100ms
 		

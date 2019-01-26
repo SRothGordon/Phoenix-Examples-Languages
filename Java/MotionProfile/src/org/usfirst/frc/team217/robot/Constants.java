@@ -13,7 +13,7 @@ public class Constants {
 	 * 
 	 * @link https://github.com/CrossTheRoadElec/Phoenix-Documentation#what-are-the-units-of-my-sensor
 	 */
-	public static final double kSensorUnitsPerRotation = 1000; //was 4096
+	public static final double kSensorUnitsPerRotation = 8192; //was 4096
 
 	/**
 	 * Which PID slot to pull gains from. Starting 2018, you can choose from
