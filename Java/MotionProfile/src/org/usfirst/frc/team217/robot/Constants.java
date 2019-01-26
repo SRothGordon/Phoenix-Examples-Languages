@@ -3,17 +3,14 @@ package org.usfirst.frc.team217.robot;
 public class Constants {
 
 	/** which Talon on CANBus */
-	public static final int kTalonID = 1; //was 0
-	public static final int kTalonID2 = 3; 
-	
-	public static final int kTalonID3=2;
-	public static final int kTalonID4=4;
+	public static final int kTalonID = 0;
+
 	/**
 	 * How many sensor units per rotation. Using CTRE Magnetic Encoder.
 	 * 
 	 * @link https://github.com/CrossTheRoadElec/Phoenix-Documentation#what-are-the-units-of-my-sensor
 	 */
-	public static final double kSensorUnitsPerRotation = 8192; //was 4096
+	public static final double kSensorUnitsPerRotation = 4096;
 
 	/**
 	 * Which PID slot to pull gains from. Starting 2018, you can choose from
