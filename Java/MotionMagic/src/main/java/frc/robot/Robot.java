@@ -68,7 +68,8 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 
 public class Robot extends TimedRobot {
 	/* Hardware */
-	TalonSRX _talon = new TalonSRX(3);
+	TalonSRX _talon = new TalonSRX(1);
+	TalonSRX _talon2 = new TalonSRX(2);
 	Joystick _joy = new Joystick(0);
 
 	/* Used to build string throughout loop */
@@ -79,7 +80,7 @@ public class Robot extends TimedRobot {
 		_talon.configFactoryDefault();
 
 		/* Configure Sensor Source for Pirmary PID */
-		_talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
+		_talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder,
 											Constants.kPIDLoopIdx, 
 											Constants.kTimeoutMs);
 
@@ -114,6 +115,45 @@ public class Robot extends TimedRobot {
 
 		/* Zero the sensor */
 		_talon.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+
+		_talon2.configFactoryDefault();
+
+		/* Configure Sensor Source for Pirmary PID */
+		_talon2.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder,
+											Constants.kPIDLoopIdx, 
+											Constants.kTimeoutMs);
+
+		/**
+		 * Configure Talon SRX Output and Sesnor direction accordingly
+		 * Invert Motor to have green LEDs when driving Talon Forward / Requesting Postiive Output
+		 * Phase sensor to have positive increment when driving Talon Forward (Green LED)
+		 */
+		_talon2.setSensorPhase(true);
+		_talon2.setInverted(false);
+
+		/* Set relevant frame periods to be at least as fast as periodic rate */
+		_talon2.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
+		_talon2.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+
+		/* Set the peak and nominal outputs */
+		_talon2.configNominalOutputForward(0, Constants.kTimeoutMs);
+		_talon2.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		_talon2.configPeakOutputForward(1, Constants.kTimeoutMs);
+		_talon2.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+
+		/* Set Motion Magic gains in slot0 - see documentation */
+		_talon2.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
+		_talon2.config_kF(Constants.kSlotIdx, Constants.kGains.kF, Constants.kTimeoutMs);
+		_talon2.config_kP(Constants.kSlotIdx, Constants.kGains.kP, Constants.kTimeoutMs);
+		_talon2.config_kI(Constants.kSlotIdx, Constants.kGains.kI, Constants.kTimeoutMs);
+		_talon2.config_kD(Constants.kSlotIdx, Constants.kGains.kD, Constants.kTimeoutMs);
+
+		/* Set acceleration and vcruise velocity - see documentation */
+		_talon2.configMotionCruiseVelocity(15000, Constants.kTimeoutMs);
+		_talon2.configMotionAcceleration(6000, Constants.kTimeoutMs);
+
+		/* Zero the sensor */
+		_talon2.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
 	}
 
 	/**
@@ -121,7 +161,7 @@ public class Robot extends TimedRobot {
 	 */
 	public void teleopPeriodic() {
 		/* Get gamepad axis - forward stick is positive */
-		double leftYstick = -1.0 * _joy.getY();
+		double leftYstick = 1.0 * _joy.getY();
 
 		/* Get current Talon SRX motor output */
 		double motorOutput = _talon.getMotorOutputPercent();
@@ -141,7 +181,7 @@ public class Robot extends TimedRobot {
 			
 			/*4096 ticks/rev * 10 Rotations in either direction */
 			double targetPos = leftYstick * 4096 * 10.0;
-			_talon.set(ControlMode.MotionMagic, targetPos);
+			_talon.set(ControlMode.PercentOutput, targetPos);
 
 			/* Append more signals to print when in speed mode */
 			_sb.append("\terr:");
@@ -152,6 +192,7 @@ public class Robot extends TimedRobot {
 			/* Percent Output */
 
 			_talon.set(ControlMode.PercentOutput, leftYstick);
+			_talon2.set(ControlMode.PercentOutput, leftYstick);
 		}
 
 		/* Instrumentation */
